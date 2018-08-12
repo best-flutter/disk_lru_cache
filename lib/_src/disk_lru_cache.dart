@@ -103,9 +103,8 @@ class DiskLruCache implements Closeable {
     });
   }
 
-
-  Future clean(){
-    return SynchronizedLock.synchronized(this, () async{
+  Future clean() {
+    return SynchronizedLock.synchronized(this, () async {
       Iterable<CacheEntry> entries = await values;
       List<Future<bool>> list = [];
       for (CacheEntry entry in entries) {
@@ -113,7 +112,6 @@ class DiskLruCache implements Closeable {
       }
       return await Future.wait(list);
     });
-
   }
 
   Future<CacheEditor> edit(String key,
@@ -464,8 +462,12 @@ class DiskLruCache implements Closeable {
   }
 
   Future _deleteSafe(File file) async {
-    if (file.existsSync()) {
-      file.deleteSync();
+    if (await file.exists()) {
+      try {
+        await file.delete();
+      } catch (e) {
+        //if the file cannot be deleted,may be OS errors.
+      }
     }
   }
 
@@ -624,6 +626,7 @@ class CacheEditor {
       File dirtyFile = entry.dirtyFiles[index];
       // this sink do not throw exception
       return new IOSinkProxy(dirtyFile.openWrite(), onError: (e) async {
+        print("Error when write to disk cache");
         await detach();
       });
     });

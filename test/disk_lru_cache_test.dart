@@ -17,7 +17,10 @@ void main() {
 
   test("Basic usage with bytes", () async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
+        maxSize: maxSize,
+        directory: cacheDirectory,
+        filesCount: 1,
+        opCompactThreshold: 200);
 
     print('============================\n${cacheDirectory.path}');
 
@@ -44,7 +47,10 @@ void main() {
 
   test("Basic usage width string", () async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
+        maxSize: maxSize,
+        directory: cacheDirectory,
+        filesCount: 1,
+        opCompactThreshold: 200);
 
     // write stream
     CacheEditor editor = await cache.edit('filekey');
@@ -63,7 +69,10 @@ void main() {
 
   Future testCache() async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
+        maxSize: maxSize,
+        directory: cacheDirectory,
+        filesCount: 1,
+        opCompactThreshold: 200);
     print(cache.directory);
 
     String str200k;
@@ -169,24 +178,22 @@ void main() {
   }
 
   test('Lru cache', () async {
-//    await (() async {
-//      await testCache();
-//    })();
-//
-//    // do it again
-//    await (() async {
-//      await testCache();
-//    })();
-//
-//    //test remove
-//
-//    await (() async {
-//      await testRemoveAll();
-//    })();
+    await (() async {
+      await testCache();
+    })();
+
+    // do it again
+    await (() async {
+      await testCache();
+    })();
+
+    //test remove
+    await (() async {
+      await testRemoveAll();
+    })();
   });
 
-  test("Simulate errors when write to disk", () async {
-
+  test("Test commit errors", () async {
     DiskLruCache cache = new DiskLruCache(
         maxSize: maxSize, directory: cacheDirectory, filesCount: 2);
     // write stream
@@ -200,9 +207,33 @@ void main() {
       CacheSnapshot snapshot = await cache.get("filekey");
       expect(snapshot, null);
     }
+  });
 
+  test("Simulate errors when write to disk", () async {
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+    // write stream
+    CacheEditor editor = await cache.edit('errorkey');
+    if (editor != null) {
+      IOSink sink = await editor.newSink(0);
 
+      CacheSnapshot snapshot;
 
+      sink.write('your value');
+      await sink.flush();
+
+      //remove the file
+      Iterable<CacheEntry> values = await cache.values;
+      values = values.where((CacheEntry entry) {
+        return entry.key == "errorkey";
+      });
+      await values.toList()[0].dirtyFiles[0].delete();
+
+      await sink.close();
+      await editor.commit();
+
+      expect(await cache.get("errorkey"), null);
+    }
   });
 
   test("Simulate errors when read from disk", () {});

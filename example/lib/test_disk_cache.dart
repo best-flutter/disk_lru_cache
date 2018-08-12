@@ -17,9 +17,30 @@ Future testCache() async {
       filesCount: 1,
       opCompactThreshold: 200);
   print(cache.directory);
+  CacheEditor editor;
+  // write stream
+  editor = await cache.edit('errorkey');
+  if (editor != null) {
+    IOSink sink = await editor.newSink(0);
+
+    CacheSnapshot snapshot;
+
+    sink.write('your value');
+    await sink.flush();
+
+    //remove the file
+    Iterable<CacheEntry> values = await cache.values;
+    values = values.where((CacheEntry entry) {
+      return entry.key == "errorkey";
+    });
+    await values.toList()[0].dirtyFiles[0].delete();
+
+    await sink.close();
+    await editor.commit();
+  }
 
   // write stream
-  CacheEditor editor = await cache.edit('imagekey');
+  editor = await cache.edit('imagekey');
   if (editor != null) {
     HttpClient client = new HttpClient();
     HttpClientRequest request = await client.openUrl(
