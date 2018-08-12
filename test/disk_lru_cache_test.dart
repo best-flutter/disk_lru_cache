@@ -17,7 +17,7 @@ void main() {
 
   test("Basic usage with bytes", () async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
 
     // write stream
     CacheEditor editor = await cache.edit('imagekey');

@@ -14,7 +14,8 @@ Future testCache() async {
   DiskLruCache cache = new DiskLruCache(
       maxSize: maxSize,
       directory: new Directory("${Directory.systemTemp.path}/cache"),
-      filesCount: 1);
+      filesCount: 1,
+      opCompactThreshold: 200);
   print(cache.directory);
 
   // write stream

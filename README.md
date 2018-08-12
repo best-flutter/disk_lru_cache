@@ -17,7 +17,7 @@
 
 
 # disk_lru_cache
-Disk lru cache for flutter. [wiki](https://en.wikipedia.org/wiki/LRU)
+Disk lru cache for flutter. [wiki](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU))
 
 A cache that uses a bounded amount of space on a filesystem. 
 Each cache entry has a string key and a fixed number of files, witch is accessible as stream.

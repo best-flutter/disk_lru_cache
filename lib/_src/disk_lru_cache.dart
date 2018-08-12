@@ -31,6 +31,8 @@ class DiskLruCache implements Closeable {
   /// Record every operation in this file.
   final File _recordFile;
 
+  final int opCompactThreshold;
+
   /// Used when rebuild record file if necessary
   final File _recordFileTmp;
 
@@ -68,7 +70,10 @@ class DiskLruCache implements Closeable {
   int _sequenceNumber = 0;
 
   DiskLruCache(
-      {Directory directory, this.maxSize: 20 * 1024 * 1024, int filesCount: 2})
+      {Directory directory,
+      this.maxSize: 20 * 1024 * 1024,
+      int filesCount: 2,
+      this.opCompactThreshold: MAX_OP_COUNT})
       : assert(directory != null),
         this.directory = directory,
         _filesCount = filesCount,
@@ -173,7 +178,7 @@ class DiskLruCache implements Closeable {
 
   /// We only rebuild record file when opCount is at least MAX_OP_COUNT
   bool _needsRebuild() {
-    return _opCount >= MAX_OP_COUNT && _opCount >= _lruEntries.length;
+    return _opCount >= opCompactThreshold && _opCount >= _lruEntries.length;
   }
 
   Future _trimToSize() async {
@@ -228,7 +233,7 @@ class DiskLruCache implements Closeable {
       }
 
       if (await _recordFile.exists()) {
-        _recordFile.rename(_recordFileBackup.path);
+        await _recordFile.rename(_recordFileBackup.path);
       }
 
       await _recordFileTmp.rename(_recordFile.path);
@@ -259,6 +264,17 @@ class DiskLruCache implements Closeable {
       if (!await this.directory.exists()) {
         await this.directory.create(recursive: true);
       }
+
+      // If a bkp file exists, use it instead.
+      if (await _recordFileBackup.exists()) {
+        // If recod file also exists just delete backup file.
+        if (await _recordFile.exists()) {
+          await _recordFileBackup.delete();
+        } else {
+          _recordFileBackup.rename(_recordFile.path);
+        }
+      }
+
       if (await _recordFile.exists()) {
         try {
           await _parseRecordFile();
