@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:disk_lru_cache/_src/disk_lru_cache.dart';
+import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'dart:math' as Math;
 import 'package:disk_lru_cache/disk_lru_cache.dart';
@@ -10,14 +12,56 @@ void main() {
   int maxSize =
       10 * 1024 * 1024; // 10M,make sure to test rebuild progress below
 
-  Directory cacheDirectory = new Directory("${Directory.systemTemp.path}/cache");
+  Directory cacheDirectory =
+      new Directory("${Directory.systemTemp.path}/cache");
+
+  test("Basic usage with bytes", () async {
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+
+    // write stream
+    CacheEditor editor = await cache.edit('imagekey');
+    if (editor != null) {
+      HttpClient client = new HttpClient();
+      HttpClientRequest request = await client.openUrl(
+          "GET",
+          Uri.parse(
+              "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1534075481&di=1a90bd266d62bc5edfe1ce84ac38330e&src=http://photocdn.sohu.com/20130517/Img376200804.jpg"));
+      HttpClientResponse response = await request.close();
+      Stream<List<int>> stream = await editor.copyStream(0, response);
+      // The bytes has been written to disk at this point.
+      await new ByteStream(stream).toBytes();
+      await editor.commit();
+
+      // read stream
+      CacheSnapshot snapshot = await cache.get('imagekey');
+      Uint8List bytes = await snapshot.getBytes(0);
+      print(bytes);
+    }
+  });
+
+  test("Basic usage width string", () async {
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+
+    // write stream
+    CacheEditor editor = await cache.edit('filekey');
+    if (editor != null) {
+      IOSink sink = await editor.newSink(0);
+      sink.write('your value');
+      await sink.close();
+      await editor.commit();
+    }
+
+    // read stream
+    CacheSnapshot snapshot = await cache.get('filekey');
+    String str = await snapshot.getString(0);
+    print(str);
+  });
 
   Future testCache() async {
-
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize,
-        directory: cacheDirectory,
-        filesCount: 1);
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
     print(cache.directory);
 
     String str200k;
@@ -98,44 +142,37 @@ void main() {
       await test();
     }
 
-
     int size = cache.size;
 
     Iterable<CacheEntry> entries = await cache.values;
-    int calcSize= 0 ;
-    entries.forEach( (CacheEntry entry){
+    int calcSize = 0;
+    entries.forEach((CacheEntry entry) {
       calcSize += entry.size;
     });
 
     expect(cache.size, calcSize);
 
-    expect(cache.size < maxSize,true);
+    expect(cache.size < maxSize, true);
 
     await cache.close();
     print("Cache size : ${cache.size/1024/1024} m ");
   }
 
-
-  Future testRemoveAll() async{
+  Future testRemoveAll() async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize,
-        directory: cacheDirectory,
-        filesCount: 1);
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
 
     Iterable<CacheEntry> entries = await cache.values;
 
     List<Future<bool>> list = [];
-    for(CacheEntry entry in entries){
+    for (CacheEntry entry in entries) {
       list.add(cache.remove(entry.key));
     }
     List<bool> results = await Future.wait(list);
 
-
-    expect(results.every((bool value)=>value),true);
+    expect(results.every((bool value) => value), true);
     expect(cache.size, 0);
   }
-
-
 
   test('Lru cache', () async {
     await (() async {
@@ -149,11 +186,12 @@ void main() {
 
     //test remove
 
-    await (() async{
-
+    await (() async {
       await testRemoveAll();
-
     })();
-
   });
+
+  test("Simulate errors when write to disk", () {});
+
+  test("Simulate errors when read from disk", () {});
 }

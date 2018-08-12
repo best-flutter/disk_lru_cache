@@ -17,6 +17,68 @@
 
 
 # disk_lru_cache
-Disk lru cache for flutter.
+Disk lru cache for flutter. [wiki](https://en.wikipedia.org/wiki/LRU)
+
+A cache that uses a bounded amount of space on a filesystem. 
+Each cache entry has a string key and a fixed number of files, witch is accessible as stream.
+
+# Use cases
+
+The basic usage is like this:
+
+
+With string:
+
+```
+int maxSize =
+      10 * 1024 * 1024; // 10M
+
+// Make sure it's writable
+Directory cacheDirectory =
+            new Directory("${Directory.systemTemp.path}/cache");
+
+ DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+
+    // write stream
+    CacheEditor editor = await cache.edit('filekey');
+    if(editor!=null){
+      IOSink sink = await editor.newSink(0);
+      sink.write('your value');
+      await sink.close();
+      await editor.commit();
+    }
+
+    // read stream
+    CacheSnapshot snapshot =  await cache.get('filekey');
+    String str = await snapshot.getString(0);
+    print(str);
+
+```
+
+
+With bytes
+
+```
+// write bytes
+  CacheEditor editor = await cache.edit('imagekey');
+  if(editor!=null){
+    HttpClient client = new HttpClient();
+    HttpClientRequest request = await client.openUrl("GET", Uri.parse("https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1534075481&di=1a90bd266d62bc5edfe1ce84ac38330e&src=http://photocdn.sohu.com/20130517/Img376200804.jpg"));
+    HttpClientResponse response = await request.close();
+    Stream<List<int>> stream = await editor.copyStream(0, response);
+    // The bytes has been written to disk at this point.
+    await new ByteStream(stream).toBytes();
+    await editor.commit();
+
+    // read stream
+    CacheSnapshot snapshot =  await cache.get('imagekey');
+    Uint8List bytes = await snapshot.getBytes(0);
+    print(bytes);
+  }
+
+```
+
+
 
 

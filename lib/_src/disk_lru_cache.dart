@@ -114,7 +114,7 @@ class DiskLruCache implements Closeable {
         return null; // Another edit is in progress.
       }
 
-      //Flush the journal before creating files to prevent file leaks.
+      //Flush the record before creating files to prevent file leaks.
       await _recordDirty(key);
 
       if (entry == null) {
@@ -214,6 +214,7 @@ class DiskLruCache implements Closeable {
         for (CacheEntry entry in _lruEntries.values) {
           entry._writeTo(writer);
         }
+        await writer.flush();
       } catch (e) {
         print("Cannot write file at this time $e");
         return _;
@@ -326,7 +327,7 @@ class DiskLruCache implements Closeable {
   void _parseRecordLine(String line) {
     int firstSpace = line.indexOf(' ');
     if (firstSpace == -1) {
-      throw new Exception("unexpected journal line: " + line);
+      throw new Exception("unexpected record line: " + line);
     }
 
     int keyBegin = firstSpace + 1;
@@ -395,8 +396,7 @@ class DiskLruCache implements Closeable {
     return SynchronizedLock.synchronized<bool>(this, () async {
       await _lazyInit();
       CacheEntry entry = _lruEntries[key];
-      if (entry == null)
-        return false;
+      if (entry == null) return false;
       await _removeEntry(entry);
       return true;
     });
@@ -502,8 +502,7 @@ class DiskLruCache implements Closeable {
   Future _removeEntry(CacheEntry entry) async {
     if (entry.currentEditor != null) {
       // Prevent the edit from completing normally.
-      entry.currentEditor
-          .detach();
+      entry.currentEditor.detach();
     }
 
     for (int i = 0; i < _filesCount; i++) {
@@ -627,9 +626,9 @@ class CacheEntry {
     }
   }
 
-  int get size{
-    int _size= 0 ;
-    for(int i=0 , c = lengths.length; i < c; ++i){
+  int get size {
+    int _size = 0;
+    for (int i = 0, c = lengths.length; i < c; ++i) {
       _size += lengths[i];
     }
     return _size;

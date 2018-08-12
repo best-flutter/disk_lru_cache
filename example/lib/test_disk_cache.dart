@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:disk_lru_cache/_src/disk_lru_cache.dart';
+import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'dart:math' as Math;
 import 'package:disk_lru_cache/disk_lru_cache.dart';
@@ -14,6 +16,26 @@ Future testCache() async {
       directory: new Directory("${Directory.systemTemp.path}/cache"),
       filesCount: 1);
   print(cache.directory);
+
+  // write stream
+  CacheEditor editor = await cache.edit('imagekey');
+  if (editor != null) {
+    HttpClient client = new HttpClient();
+    HttpClientRequest request = await client.openUrl(
+        "GET",
+        Uri.parse(
+            "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1534075481&di=1a90bd266d62bc5edfe1ce84ac38330e&src=http://photocdn.sohu.com/20130517/Img376200804.jpg"));
+    HttpClientResponse response = await request.close();
+    Stream<List<int>> stream = await editor.copyStream(0, response);
+    // The bytes has been written to disk at this point.
+    await new ByteStream(stream).toBytes();
+    await editor.commit();
+
+    // read stream
+    CacheSnapshot snapshot = await cache.get('imagekey');
+    Uint8List bytes = await snapshot.getBytes(0);
+    print(bytes);
+  }
 
   String str200k;
 
@@ -97,12 +119,12 @@ Future testCache() async {
   Iterable<CacheEntry> entries = await cache.values;
 
   List<Future<bool>> list = [];
-  for(CacheEntry entry in entries){
+  for (CacheEntry entry in entries) {
     list.add(cache.remove(entry.key));
   }
   List<bool> results = await Future.wait(list);
 
-  assert(cache.size==0);
+  assert(cache.size == 0);
 
   await cache.close();
 
