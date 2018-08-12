@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="70febbb3-bf32-4a09-8b60-9f429c0ed624" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/example/lib/test_disk_cache.dart" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/test/lock_test.dart" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/.travis.yml" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/dev/bots/travis_install.sh" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/dev/bots/travis_script.sh" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" afterPath="$PROJECT_DIR$/example/lib/main.dart" />
-      <change beforePath="$PROJECT_DIR$/lib/_src/disk_lru_cache.dart" afterPath="$PROJECT_DIR$/lib/_src/disk_lru_cache.dart" />
-      <change beforePath="$PROJECT_DIR$/lib/_src/ioutil.dart" afterPath="$PROJECT_DIR$/lib/_src/ioutil.dart" />
-      <change beforePath="$PROJECT_DIR$/lib/_src/lock.dart" afterPath="$PROJECT_DIR$/lib/_src/lock.dart" />
-      <change beforePath="$PROJECT_DIR$/lib/disk_lru_cache.dart" afterPath="$PROJECT_DIR$/lib/disk_lru_cache.dart" />
-      <change beforePath="$PROJECT_DIR$/test/disk_lru_cache_test.dart" afterPath="$PROJECT_DIR$/test/disk_lru_cache_test.dart" />
     </list>
     <ignored path="$PROJECT_DIR$/.dart_tool/" />
     <ignored path="$PROJECT_DIR$/.idea/" />
@@ -77,24 +72,42 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="future.dart" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../flutter/bin/cache/pkg/sky_engine/lib/async/future.dart">
+      <file leaf-file-name="disk_lru_cache_test.dart" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/disk_lru_cache_test.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="345" column="25" lean-forward="false" selection-start-line="345" selection-start-column="25" selection-end-line="345" selection-end-column="25" />
+            <state relative-caret-position="60">
+              <caret line="4" column="31" lean-forward="true" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="disk_lru_cache_test.dart" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test/disk_lru_cache_test.dart">
+      <file leaf-file-name="travis_script.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dev/bots/travis_script.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="104">
-              <caret line="75" column="43" lean-forward="false" selection-start-line="75" selection-start-column="43" selection-end-line="75" selection-end-column="43" />
-              <folding>
-                <element signature="e#0#20#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="90">
+              <caret line="6" column="36" lean-forward="true" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="travis_install.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dev/bots/travis_install.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="3" column="18" lean-forward="true" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".travis.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.travis.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="6" column="7" lean-forward="true" selection-start-line="6" selection-start-column="7" selection-end-line="6" selection-end-column="7" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -179,11 +192,12 @@
         <option value="$PROJECT_DIR$/lib/_src/disk_lru_cache.dart" />
         <option value="$PROJECT_DIR$/example/lib/test_disk_cache.dart" />
         <option value="$PROJECT_DIR$/test/disk_lru_cache_test.dart" />
+        <option value="$PROJECT_DIR$/dev/bots/travis_install.sh" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="188" />
+    <option name="x" value="270" />
     <option name="y" value="23" />
     <option name="width" value="1376" />
     <option name="height" value="964" />
@@ -217,24 +231,18 @@
             <path>
               <item name="disk_lru_cache" type="b2602c69:ProjectViewProjectNode" />
               <item name="disk_lru_cache" type="462c0819:PsiDirectoryNode" />
-              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="dev" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="disk_lru_cache" type="b2602c69:ProjectViewProjectNode" />
               <item name="disk_lru_cache" type="462c0819:PsiDirectoryNode" />
-              <item name="example" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="disk_lru_cache" type="b2602c69:ProjectViewProjectNode" />
-              <item name="disk_lru_cache" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
+              <item name="dev" type="462c0819:PsiDirectoryNode" />
+              <item name="bots" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="disk_lru_cache" type="b2602c69:ProjectViewProjectNode" />
               <item name="disk_lru_cache" type="462c0819:PsiDirectoryNode" />
               <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="_src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="disk_lru_cache" type="b2602c69:ProjectViewProjectNode" />
@@ -257,6 +265,11 @@
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -394,7 +407,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="188" y="23" width="1376" height="964" extended-state="0" />
+    <frame x="270" y="23" width="1376" height="964" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32918552" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -768,11 +781,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/disk_lru_cache_test.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="104">
-          <caret line="75" column="43" lean-forward="false" selection-start-line="75" selection-start-column="43" selection-end-line="75" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="60">
+          <caret line="4" column="31" lean-forward="true" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dev/bots/travis_script.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="36" lean-forward="true" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dev/bots/travis_install.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="18" lean-forward="true" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="7" lean-forward="true" selection-start-line="6" selection-start-column="7" selection-end-line="6" selection-end-column="7" />
+          <folding />
         </state>
       </provider>
     </entry>
