@@ -19,6 +19,8 @@ void main() {
     DiskLruCache cache = new DiskLruCache(
         maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
 
+    print('============================\n${cacheDirectory.path}');
+
     // write stream
     CacheEditor editor = await cache.edit('imagekey');
     if (editor != null) {
@@ -42,7 +44,7 @@ void main() {
 
   test("Basic usage width string", () async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
 
     // write stream
     CacheEditor editor = await cache.edit('filekey');
@@ -61,7 +63,7 @@ void main() {
 
   Future testCache() async {
     DiskLruCache cache = new DiskLruCache(
-        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1,opCompactThreshold: 200);
     print(cache.directory);
 
     String str200k;
