@@ -283,8 +283,9 @@ class DiskLruCache implements Closeable {
 
   /// make copy of current values
   Future<Iterable<CacheEntry>> get values {
-    return SynchronizedLock.synchronized(this, () {
-      return List.from(_lruEntries.values);
+    return SynchronizedLock.synchronized(this, () async {
+      await _lazyInit();
+      return List<CacheEntry>.from(_lruEntries.values);
     });
   }
 
@@ -394,7 +395,8 @@ class DiskLruCache implements Closeable {
     return SynchronizedLock.synchronized<bool>(this, () async {
       await _lazyInit();
       CacheEntry entry = _lruEntries[key];
-      if (entry == null) return false;
+      if (entry == null)
+        return false;
       await _removeEntry(entry);
       return true;
     });
@@ -499,8 +501,9 @@ class DiskLruCache implements Closeable {
 
   Future _removeEntry(CacheEntry entry) async {
     if (entry.currentEditor != null) {
+      // Prevent the edit from completing normally.
       entry.currentEditor
-          .detach(); // Prevent the edit from completing normally.
+          .detach();
     }
 
     for (int i = 0; i < _filesCount; i++) {
@@ -622,6 +625,14 @@ class CacheEntry {
 
       this.lengths[i] = 0;
     }
+  }
+
+  int get size{
+    int _size= 0 ;
+    for(int i=0 , c = lengths.length; i < c; ++i){
+      _size += lengths[i];
+    }
+    return _size;
   }
 
   String toString() {

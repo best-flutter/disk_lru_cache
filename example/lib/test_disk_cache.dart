@@ -16,6 +16,7 @@ Future testCache() async {
   print(cache.directory);
 
   String str200k;
+
   String get200k() {
     if (str200k == null) {
       StringBuffer sb = new StringBuffer();
@@ -92,6 +93,16 @@ Future testCache() async {
   for (int i = 0; i < 10; ++i) {
     await test();
   }
+
+  Iterable<CacheEntry> entries = await cache.values;
+
+  List<Future<bool>> list = [];
+  for(CacheEntry entry in entries){
+    list.add(cache.remove(entry.key));
+  }
+  List<bool> results = await Future.wait(list);
+
+  assert(cache.size==0);
 
   await cache.close();
 

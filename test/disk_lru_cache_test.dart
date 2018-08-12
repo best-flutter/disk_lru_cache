@@ -7,12 +7,16 @@ import 'dart:math' as Math;
 import 'package:disk_lru_cache/disk_lru_cache.dart';
 
 void main() {
+  int maxSize =
+      10 * 1024 * 1024; // 10M,make sure to test rebuild progress below
+
+  Directory cacheDirectory = new Directory("${Directory.systemTemp.path}/cache");
+
   Future testCache() async {
-    int maxSize =
-        10 * 1024 * 1024; // 10M,make sure to test rebuild progress below
+
     DiskLruCache cache = new DiskLruCache(
         maxSize: maxSize,
-        directory: new Directory("${Directory.systemTemp.path}/cache"),
+        directory: cacheDirectory,
         filesCount: 1);
     print(cache.directory);
 
@@ -94,12 +98,44 @@ void main() {
       await test();
     }
 
+
+    int size = cache.size;
+
+    Iterable<CacheEntry> entries = await cache.values;
+    int calcSize= 0 ;
+    entries.forEach( (CacheEntry entry){
+      calcSize += entry.size;
+    });
+
+    expect(cache.size, calcSize);
+
+    expect(cache.size < maxSize,true);
+
     await cache.close();
-
     print("Cache size : ${cache.size/1024/1024} m ");
-
-    assert(cache.size < maxSize);
   }
+
+
+  Future testRemoveAll() async{
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize,
+        directory: cacheDirectory,
+        filesCount: 1);
+
+    Iterable<CacheEntry> entries = await cache.values;
+
+    List<Future<bool>> list = [];
+    for(CacheEntry entry in entries){
+      list.add(cache.remove(entry.key));
+    }
+    List<bool> results = await Future.wait(list);
+
+
+    expect(results.every((bool value)=>value),true);
+    expect(cache.size, 0);
+  }
+
+
 
   test('Lru cache', () async {
     await (() async {
@@ -110,5 +146,14 @@ void main() {
     await (() async {
       await testCache();
     })();
+
+    //test remove
+
+    await (() async{
+
+      await testRemoveAll();
+
+    })();
+
   });
 }
