@@ -5,47 +5,42 @@ import 'package:disk_lru_cache/_src/disk_lru_cache.dart';
 import 'package:test/test.dart';
 import 'dart:math' as Math;
 import 'package:disk_lru_cache/disk_lru_cache.dart';
+
 void main() {
-
   Future testCache() async {
-
-    int maxSize = 10 * 1024 * 1024; // 10M,make sure to test rebuild progress below
+    int maxSize =
+        10 * 1024 * 1024; // 10M,make sure to test rebuild progress below
     DiskLruCache cache = new DiskLruCache(
-        maxSize:maxSize ,
+        maxSize: maxSize,
         directory: new Directory("${Directory.systemTemp.path}/cache"),
         filesCount: 1);
     print(cache.directory);
 
-    String str200k ;
-    String get200k(){
-      if(str200k==null){
+    String str200k;
+    String get200k() {
+      if (str200k == null) {
         StringBuffer sb = new StringBuffer();
 
-        for(int i=0 , c = 200 * 1024; i < c; ++i){
+        for (int i = 0, c = 200 * 1024; i < c; ++i) {
           sb.write("a");
         }
 
-        str200k= sb.toString();
+        str200k = sb.toString();
       }
       return str200k;
-
-
     }
 
-    Future test() async{
-
-
+    Future test() async {
       // we must wait the file created
       List<Future> list = [];
       List<Future> writeDisk = [];
-      List<Future> openWrite=[];
+      List<Future> openWrite = [];
 
       void editValue(DiskLruCache cache, String key, String value) {
-        list.add(cache.edit(key).then( (CacheEditor editor){
+        list.add(cache.edit(key).then((CacheEditor editor) {
           if (editor != null) {
             openWrite.add(editor.newSink(0).then((IOSink sink) async {
-
-              writeDisk.add( ( () async{
+              writeDisk.add((() async {
                 if (sink != null) {
                   sink.write(value);
                   await sink.close();
@@ -54,17 +49,14 @@ void main() {
                 } else {
                   print("Sink is null");
                 }
-
               })());
-
             }).catchError((e) {
               print(e);
             }));
-          }else{
+          } else {
             print("Cannot open editor for key $key");
           }
         }));
-
       }
 
       Future useCache(DiskLruCache cache) async {
@@ -89,6 +81,7 @@ void main() {
           //cache.remove("${random()}");
         }
       }
+
       await useCache(cache);
 
       await Future.wait(list);
@@ -97,7 +90,7 @@ void main() {
     }
 
     // our operation times must > 2000,so that we can test rebuild record file.
-    for(int i=0; i < 10; ++i){
+    for (int i = 0; i < 10; ++i) {
       await test();
     }
 
@@ -105,13 +98,17 @@ void main() {
 
     print("Cache size : ${cache.size/1024/1024} m ");
 
-    assert( cache.size < maxSize);
+    assert(cache.size < maxSize);
   }
-
 
   test('Lru cache', () async {
     await (() async {
-     await testCache();
+      await testCache();
+    })();
+
+    // do it again
+    await (() async {
+      await testCache();
     })();
   });
 }

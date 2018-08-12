@@ -12,6 +12,8 @@ void main() {
 
   List<String> sequence = [];
 
+  SynchronizedLock.debug = true;
+
   Future executeLocks(a, b) {
     return SynchronizedLock.synchronized(a, () async {
       print("Sync a start");
@@ -80,5 +82,27 @@ void main() {
             "BEnd",
             "AEnd"
           ]));
+  });
+
+  test("Test on call ", () async {
+    await (() async {
+      bool inited = false;
+      int count = 0;
+      var call = () async {
+        ++count;
+        if (inited == false) {
+          return;
+        }
+        await new Future.delayed(new Duration(milliseconds: 3000));
+        inited = true;
+      };
+
+      SynchronizedLock.execute(call);
+      SynchronizedLock.execute(call);
+      SynchronizedLock.execute(call);
+      await SynchronizedLock.execute(call);
+
+      expect(count, 1);
+    })();
   });
 }

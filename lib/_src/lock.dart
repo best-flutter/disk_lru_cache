@@ -20,34 +20,35 @@ class SynchronizedLock {
     return future;
   }
 
-  static bool _debug = false;
+  static bool debug = false;
 
   static Map<Object, List<_PoolItem>> _executePool = new Map();
 
-  /// Make all function call sequence on one `lock`
+  /// Make all function call sequence on one `lock`,
+  /// Re-entrant lock in dart
   static Future<T> synchronized<T>(Object lock, Function call) {
     Zone current = Zone.current;
     Set _lock = current['lock'];
     if (current == Zone.root || _lock == null || !_lock.contains(lock)) {
-      if (_debug) print("Add to queue $call");
+      if (debug) print("Add to queue $call");
       if (_lock == null) {
         _lock = new Set();
       }
       _lock.add(lock);
 
       return Zone.root.fork(zoneValues: {"lock": _lock}).run<Future<T>>(() {
-        if (_debug) print("========================${Zone.current.hashCode}");
+        if (debug) print("========================${Zone.current.hashCode}");
 
         List<_PoolItem> value = _executePool[lock];
         var next = () {
-          if (_debug) print("next!");
+          if (debug) print("next!");
           if (value.length <= 0) {
             return;
           }
           _PoolItem item = value.removeAt(0);
           Future future = item.execute();
           future.whenComplete(() {
-            if (_debug)
+            if (debug)
               print(
                   "Complete a function in Zone : ${item.zone.hashCode} remove lock: $lock");
 
@@ -73,9 +74,9 @@ class SynchronizedLock {
         return item.done;
       });
     } else {
-      if (_debug) print("Execute directly");
+      if (debug) print("Execute directly");
       return new _PoolItem(call, () {
-        if (_debug) print("next directy");
+        if (debug) print("next directy");
       }, current)
           .execute();
     }

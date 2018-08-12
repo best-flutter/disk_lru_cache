@@ -51,6 +51,7 @@ class EmptyIOSink implements IOSink {
 
 typedef void IOSinkOnError(e);
 
+/// This IOSink do not throw errors
 class IOSinkProxy implements IOSink {
   final IOSink sink;
   final IOSinkOnError onError;
@@ -77,21 +78,33 @@ class IOSinkProxy implements IOSink {
   }
 
   @override
-  Future addStream(Stream<List<int>> stream) {
-    return sink.addStream(stream);
+  Future addStream(Stream<List<int>> stream) async {
+    try {
+      return await sink.addStream(stream);
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   @override
-  Future close() {
-    return sink.close();
+  Future close() async {
+    try {
+      return await sink.close();
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   @override
   Future get done => sink.done;
 
   @override
-  Future flush() {
-    return sink.flush();
+  Future flush() async {
+    try {
+      return await sink.flush();
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   @override
@@ -105,16 +118,28 @@ class IOSinkProxy implements IOSink {
 
   @override
   void writeAll(Iterable objects, [String separator = ""]) {
-    sink.writeAll(objects, separator);
+    try {
+      sink.writeAll(objects, separator);
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   @override
   void writeCharCode(int charCode) {
-    sink.writeCharCode(charCode);
+    try {
+      sink.writeCharCode(charCode);
+    } catch (e) {
+      this.onError(e);
+    }
   }
 
   @override
   void writeln([Object obj = ""]) {
-    sink.writeln(obj);
+    try {
+      sink.writeln(obj);
+    } catch (e) {
+      this.onError(e);
+    }
   }
 }

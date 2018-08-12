@@ -124,4 +124,52 @@ void main() {
 
     print(new DateTime.now().millisecondsSinceEpoch - now);
   });
+
+  test("test map ", () {
+    LruMap map = LruMap.of({"a": "1", "b": "2", "c": "3"});
+
+    expect(map.removeHead(), "1");
+    expect(map.removeHead(), "2");
+    expect(map.removeHead(), "3");
+    expect(map.removeHead(), null);
+  });
+
+  test("test clear ", () {
+    LruMap map = LruMap.of({"a": "1", "b": "2", "c": "3"});
+
+    expect(map.length, 3);
+
+    map.clear();
+
+    expect(map.length, 0);
+  });
+
+  test("Lru map other", () {
+    LruMap map = LruMap.of({"a": "1", "b": "2", "c": "3"});
+
+    LruMap other = new LruMap();
+    other.addEntries(map.entries);
+
+    print(other.values);
+
+    expect(other.values.toList()[0], "1");
+    expect(other.values.toList()[1], "2");
+    expect(other.values.toList()[2], "3");
+    expect(other.containsKey('a'), true);
+
+    other.forEach((key, value) {
+      print(value);
+    });
+
+    expect(other.containsValue("1"), true);
+
+    other.removeWhere((key, value) {
+      return key == "a";
+    });
+
+    expect(other['a'], null);
+
+    expect(other.containsKey('a'), false);
+    expect(other.containsValue('1'), false);
+  });
 }

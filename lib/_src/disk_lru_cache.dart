@@ -282,11 +282,10 @@ class DiskLruCache implements Closeable {
   }
 
   /// make copy of current values
-  Future<Iterable<CacheEntry>> get values{
-    return SynchronizedLock.synchronized(this, (){
+  Future<Iterable<CacheEntry>> get values {
+    return SynchronizedLock.synchronized(this, () {
       return List.from(_lruEntries.values);
     });
-
   }
 
   Future _parseRecordFile() async {
@@ -489,7 +488,7 @@ class DiskLruCache implements Closeable {
         ++index;
       }
 
-      entry.sequenceNumber = _sequenceNumber ++;
+      entry.sequenceNumber = _sequenceNumber++;
 
       entry.ready = true;
       entry.currentEditor = null;
@@ -612,7 +611,7 @@ class CacheEntry {
 
   int sequenceNumber;
 
-  CacheEntry({this.key, this.cache,this.sequenceNumber})
+  CacheEntry({this.key, this.cache, this.sequenceNumber})
       : cleanFiles = new List(cache._filesCount),
         dirtyFiles = new List(cache._filesCount),
         lengths = new List(cache._filesCount) {

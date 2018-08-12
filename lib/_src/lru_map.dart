@@ -27,6 +27,17 @@ class LruMap<K, V> implements Map<K, V> {
 
   int get length => _inner.length;
 
+  LruMap();
+
+  factory LruMap.of(Map<K, V> map) {
+    if (map is LruMap<K, V>) {
+      return map;
+    }
+    LruMap<K, V> result = new LruMap<K, V>();
+    result.addAll(map);
+    return result;
+  }
+
   Iterable<V> get values {
     List<V> list = [];
     for (_Entry<K, V> e = head; e != null; e = e.after) {
@@ -143,7 +154,7 @@ class LruMap<K, V> implements Map<K, V> {
 
   @override
   void addEntries(Iterable<MapEntry<K, V>> newEntries) {
-    newEntries.map((MapEntry<K, V> entry) {
+    newEntries.forEach((MapEntry<K, V> entry) {
       this[entry.key] = entry.value;
     });
   }
@@ -155,7 +166,12 @@ class LruMap<K, V> implements Map<K, V> {
 
   @override
   bool containsValue(Object value) {
-    return _inner.containsValue(value);
+    for (_Entry<K, V> e = head; e != null; e = e.after) {
+      if (e.value == value) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
