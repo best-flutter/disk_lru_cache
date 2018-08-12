@@ -103,6 +103,19 @@ class DiskLruCache implements Closeable {
     });
   }
 
+
+  Future clean(){
+    return SynchronizedLock.synchronized(this, () async{
+      Iterable<CacheEntry> entries = await values;
+      List<Future<bool>> list = [];
+      for (CacheEntry entry in entries) {
+        list.add(remove(entry.key));
+      }
+      return await Future.wait(list);
+    });
+
+  }
+
   Future<CacheEditor> edit(String key,
       {int sequenceNumber: ANY_SEQUENCE_NUMBER}) {
     return SynchronizedLock.synchronized<CacheEditor>(this, () async {
@@ -209,6 +222,10 @@ class DiskLruCache implements Closeable {
       print("Start to rebuild record");
       if (_recordWriter != null) {
         await _recordWriter.close();
+      }
+
+      if (!await this.directory.exists()) {
+        await this.directory.create(recursive: true);
       }
 
       IOSink writer = _recordFileTmp.openWrite();

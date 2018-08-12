@@ -38,7 +38,7 @@ void main() {
       // read stream
       CacheSnapshot snapshot = await cache.get('imagekey');
       Uint8List bytes = await snapshot.getBytes(0);
-      print(bytes);
+      print(bytes.length);
     }
   });
 
@@ -163,37 +163,47 @@ void main() {
   Future testRemoveAll() async {
     DiskLruCache cache = new DiskLruCache(
         maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
-
-    Iterable<CacheEntry> entries = await cache.values;
-
-    List<Future<bool>> list = [];
-    for (CacheEntry entry in entries) {
-      list.add(cache.remove(entry.key));
-    }
-    List<bool> results = await Future.wait(list);
-
+    List<bool> results = await cache.clean();
     expect(results.every((bool value) => value), true);
     expect(cache.size, 0);
   }
 
   test('Lru cache', () async {
-    await (() async {
-      await testCache();
-    })();
-
-    // do it again
-    await (() async {
-      await testCache();
-    })();
-
-    //test remove
-
-    await (() async {
-      await testRemoveAll();
-    })();
+//    await (() async {
+//      await testCache();
+//    })();
+//
+//    // do it again
+//    await (() async {
+//      await testCache();
+//    })();
+//
+//    //test remove
+//
+//    await (() async {
+//      await testRemoveAll();
+//    })();
   });
 
-  test("Simulate errors when write to disk", () {});
+  test("Simulate errors when write to disk", () async {
+
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 2);
+    // write stream
+    CacheEditor editor = await cache.edit('filekey');
+    if (editor != null) {
+      IOSink sink = await editor.newSink(0);
+      sink.write('your value');
+      await sink.close();
+      await editor.commit();
+
+      CacheSnapshot snapshot = await cache.get("filekey");
+      expect(snapshot, null);
+    }
+
+
+
+  });
 
   test("Simulate errors when read from disk", () {});
 }
