@@ -236,5 +236,56 @@ void main() {
     }
   });
 
-  test("Simulate errors when read from disk", () {});
+  test("Delete file when read", () async {
+    //Delete file when read
+
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+
+    CacheEditor editor = await cache.edit('readkey');
+    if (editor != null) {
+      IOSink sink = await editor.newSink(0);
+
+      sink.write('your value');
+      await sink.flush();
+      await sink.close();
+      await editor.commit();
+
+      //remove the file
+      Iterable<CacheEntry> values = await cache.values;
+      values = values.where((CacheEntry entry) {
+        return entry.key == "readkey";
+      });
+      try{
+        await values.toList()[0].cleanFiles[0].delete();
+      }catch(e){
+        print(e);
+      }
+
+
+      expect(await cache.get("readkey"), null);
+    }
+  });
+
+  test("Leave some dirty and don't handle and close the cache", () async {
+    DiskLruCache cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+
+    CacheEditor editor = await cache.edit('readkey');
+
+    await cache.close();
+
+    cache = new DiskLruCache(
+        maxSize: maxSize, directory: cacheDirectory, filesCount: 1);
+
+    editor = await cache.edit("readkey");
+    IOSink sink = await editor.newSink(0);
+
+    sink.write('your value');
+    await sink.flush();
+    await sink.close();
+    await editor.commit();
+
+
+  });
 }
