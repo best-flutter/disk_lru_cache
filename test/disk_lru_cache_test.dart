@@ -97,7 +97,7 @@ void main() {
     }
 
     // our operation times must > 2000,so that we can test rebuild record file.
-    for(int i=0; i < 100; ++i){
+    for(int i=0; i < 10; ++i){
       await test();
     }
 
