@@ -38,9 +38,11 @@ class DiskLruCache implements Closeable {
 
   /// directory to store caches
   final Directory directory;
+
+  /// The maximum number of bytes that this cache should use to store its data.
   final int maxSize;
 
-  /// How many files a key contains?
+  /// How many files a key/CacheEntry contains?
   final int _filesCount;
 
   /// store entries in memory,so that we can find our cache quickly
@@ -62,6 +64,8 @@ class DiskLruCache implements Closeable {
 
   /// IOSink for record file
   IOSink _recordWriter;
+
+  int _sequenceNumber = 0;
 
   DiskLruCache(
       {Directory directory, this.maxSize: 20 * 1024 * 1024, int filesCount: 2})
@@ -439,7 +443,6 @@ class DiskLruCache implements Closeable {
       await Future.wait(entry.dirtyFiles.map(_deleteSafe));
 
       if (entry.ready) {
-        //clean
         await _recordClean(entry.key, entry.lengths);
       } else {
         await _recordRemove(entry.key);
@@ -485,6 +488,8 @@ class DiskLruCache implements Closeable {
         _size = _size - oldLength + newLength;
         ++index;
       }
+
+      entry.sequenceNumber = _sequenceNumber ++;
 
       entry.ready = true;
       entry.currentEditor = null;
@@ -607,7 +612,7 @@ class CacheEntry {
 
   int sequenceNumber;
 
-  CacheEntry({this.key, this.cache})
+  CacheEntry({this.key, this.cache,this.sequenceNumber})
       : cleanFiles = new List(cache._filesCount),
         dirtyFiles = new List(cache._filesCount),
         lengths = new List(cache._filesCount) {
