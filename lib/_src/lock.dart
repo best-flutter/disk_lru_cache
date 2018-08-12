@@ -20,36 +20,48 @@ class SynchronizedLock {
     return future;
   }
 
+  static bool _debug = false;
+
   static Map<Object, List<_PoolItem>> _executePool = new Map();
 
   /// Make all function call sequence on one `lock`
   static Future<T> synchronized<T>(Object lock, Function call) {
     Zone current = Zone.current;
-    Object _lock = current['lock'];
-    if (current == Zone.root || _lock != lock) {
-      return Zone.root.fork(
-          zoneValues: {"lock": lock},
-          specification: new ZoneSpecification(handleUncaughtError: (Zone self,
-              ZoneDelegate parent,
-              Zone zone,
-              Object error,
-              StackTrace stackTrace) {
-            print(stackTrace);
-          })).run<Future<T>>(() {
+    Set _lock = current['lock'];
+    if (current == Zone.root || _lock == null || !_lock.contains(lock)) {
+      if (_debug) print("Add to queue $call");
+      if (_lock == null) {
+        _lock = new Set();
+      }
+      _lock.add(lock);
+
+      return Zone.root.fork(zoneValues: {"lock": _lock}).run<Future<T>>(() {
+        if (_debug) print("========================${Zone.current.hashCode}");
+
         List<_PoolItem> value = _executePool[lock];
         var next = () {
-          if(value.length <= 0){
+          if (_debug) print("next!");
+          if (value.length <= 0) {
             return;
           }
           _PoolItem item = value.removeAt(0);
           Future future = item.execute();
-          future.whenComplete((){
-            if(value.length<=0){
+          future.whenComplete(() {
+            if (_debug)
+              print(
+                  "Complete a function in Zone : ${item.zone.hashCode} remove lock: $lock");
+
+            Set locks = item.zone['lock'];
+            if (locks != null) {
+              locks.remove(lock);
+            }
+
+            if (value.length <= 0) {
               _executePool.remove(lock);
             }
           });
         };
-        _PoolItem<T> item = new _PoolItem<T>(call, next);
+        _PoolItem<T> item = new _PoolItem<T>(call, next, current);
         if (value == null) {
           value = [item];
           _executePool[lock] = value;
@@ -61,18 +73,22 @@ class SynchronizedLock {
         return item.done;
       });
     } else {
-      return call();
+      if (_debug) print("Execute directly");
+      return new _PoolItem(call, () {
+        if (_debug) print("next directy");
+      }, current)
+          .execute();
     }
   }
 }
 
 class _PoolItem<T> {
   Completer<T> _completer = new Completer();
-
+  Zone zone;
   Function call;
   Function next;
 
-  _PoolItem(this.call, this.next);
+  _PoolItem(this.call, this.next, this.zone);
 
   Future execute() {
     var future;
@@ -87,7 +103,6 @@ class _PoolItem<T> {
             .whenComplete(next);
         return future;
       } else {
-
         future = new Future<T>.value(future);
         _completer.complete(future);
         next();

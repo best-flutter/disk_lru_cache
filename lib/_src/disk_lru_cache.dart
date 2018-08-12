@@ -26,7 +26,7 @@ class DiskLruCache implements Closeable {
   static const CLEAN = "CLEAN";
   static const REMOVE = "REMOVE";
 
-  static const MAX_OP_COUNT = 5000;
+  static const MAX_OP_COUNT = 2000;
 
   /// Record every operation in this file.
   final File _recordFile;
@@ -55,6 +55,8 @@ class DiskLruCache implements Closeable {
 
   /// Cache size in bytes
   int _size = 0;
+
+  int get size => _size;
 
   bool _mostRecentTrimFailed = false;
 
@@ -151,7 +153,7 @@ class DiskLruCache implements Closeable {
     }
     _recordWriter.write("\n");
     await _recordWriter.flush();
-    if (_needsRebuild()) {
+    if (_needsRebuild() || _size > maxSize) {
       await _cleanUp();
     }
   }
@@ -170,7 +172,7 @@ class DiskLruCache implements Closeable {
     return _opCount >= MAX_OP_COUNT && _opCount >= _lruEntries.length;
   }
 
-  Future _trimToSize() async{
+  Future _trimToSize() async {
     while (_size > maxSize) {
       CacheEntry toEvict = _lruEntries.removeHead();
       await _removeEntry(toEvict);
@@ -178,20 +180,18 @@ class DiskLruCache implements Closeable {
     _mostRecentTrimFailed = false;
   }
 
-  Future _cleanUp(){
-    return SynchronizedLock.synchronized(this, () async{
-      try{
+  Future _cleanUp() {
+    return SynchronizedLock.synchronized(this, () async {
+      try {
         print("Start cleanup");
         await _trimToSize();
-        if(_needsRebuild()){
+        if (_needsRebuild()) {
           await _rebuildRecord();
         }
         print("Cleanup success");
-      }catch(e){
+      } catch (e) {
         print("Cleanup failed! $e");
       }
-
-
     });
   }
 
@@ -210,17 +210,16 @@ class DiskLruCache implements Closeable {
         for (CacheEntry entry in _lruEntries.values) {
           entry._writeTo(writer);
         }
-      } catch(e){
+      } catch (e) {
         print("Cannot write file at this time $e");
         return _;
       } finally {
-        try{
+        try {
           await writer.close();
-        }catch(e){
+        } catch (e) {
           print("Cannot write file at this time $e");
           return _;
         }
-
       }
 
       if (await _recordFile.exists()) {
@@ -241,8 +240,8 @@ class DiskLruCache implements Closeable {
   IOSink _newRecordWriter() {
     return new IOSinkProxy(_recordFile.openWrite(mode: FileMode.append),
         onError: (e) async {
-          _hasRecordError = true;
-          //_rebuildRecord();
+      _hasRecordError = true;
+      //_rebuildRecord();
     });
   }
 
@@ -278,6 +277,14 @@ class DiskLruCache implements Closeable {
     await directory.delete(recursive: true);
   }
 
+  /// make copy of current values
+  Future<Iterable<CacheEntry>> get values{
+    return SynchronizedLock.synchronized(this, (){
+      return List.from(_lruEntries.values);
+    });
+
+  }
+
   Future _parseRecordFile() async {
     try {
       List<String> lines = await _recordFile.readAsLines();
@@ -302,6 +309,8 @@ class DiskLruCache implements Closeable {
         _parseRecordLine(lines[i]);
         ++lineCount;
       }
+
+      _opCount = lineCount - _lruEntries.length;
 
       _recordWriter = _newRecordWriter();
     } catch (e) {
@@ -373,16 +382,16 @@ class DiskLruCache implements Closeable {
         _closed = true;
         _initialized = false;
       }
+      print("Cache is closed");
       return _;
     });
   }
 
   Future<bool> remove(String key) {
-    return SynchronizedLock.synchronized<bool>(this, () async{
+    return SynchronizedLock.synchronized<bool>(this, () async {
       await _lazyInit();
       CacheEntry entry = _lruEntries[key];
-      if (entry == null)
-        return false;
+      if (entry == null) return false;
       await _removeEntry(entry);
       return true;
     });
@@ -417,7 +426,7 @@ class DiskLruCache implements Closeable {
   }
 
   Future _deleteSafe(File file) async {
-    if(file.existsSync()){
+    if (file.existsSync()) {
       file.deleteSync();
     }
   }
@@ -484,9 +493,10 @@ class DiskLruCache implements Closeable {
     });
   }
 
-  Future _removeEntry(CacheEntry entry) async{
+  Future _removeEntry(CacheEntry entry) async {
     if (entry.currentEditor != null) {
-      entry.currentEditor.detach(); // Prevent the edit from completing normally.
+      entry.currentEditor
+          .detach(); // Prevent the edit from completing normally.
     }
 
     for (int i = 0; i < _filesCount; i++) {
@@ -574,10 +584,9 @@ class CacheEditor {
 
       File dirtyFile = entry.dirtyFiles[index];
       // this sink do not throw exception
-      return new IOSinkProxy(dirtyFile.openWrite(),
-          onError: (e) async {
-            await detach();
-          });
+      return new IOSinkProxy(dirtyFile.openWrite(), onError: (e) async {
+        await detach();
+      });
     });
   }
 }
@@ -644,7 +653,7 @@ class CacheEntry {
       }
     }
     try {
-      return new CacheSnapshot(streams: streams, lengths: lengths,key: key);
+      return new CacheSnapshot(streams: streams, lengths: lengths, key: key);
     } catch (e) {
       print(e);
       rethrow;
@@ -716,16 +725,14 @@ class CloseableStream<T> extends Stream<T> implements Closeable {
       _onDone = onDone ?? this.onDone;
     }
 
-    try{
+    try {
       _streamSubscription = _stream.listen(_onData,
           onError: _onError, onDone: _onDone, cancelOnError: cancelOnError);
       return _streamSubscription;
-    }catch(e){
+    } catch (e) {
       _onError(e);
       rethrow;
     }
-
-
   }
 
   @override
@@ -742,7 +749,8 @@ class CacheSnapshot implements Closeable {
   final List<CloseableStream<List<int>>> streams;
   final List<int> lengths;
   final String key;
-  CacheSnapshot({this.key,List<CloseableStream<List<int>>> streams, this.lengths})
+  CacheSnapshot(
+      {this.key, List<CloseableStream<List<int>>> streams, this.lengths})
       : assert(
             streams != null && streams.length > 0, "Streams is null or empty"),
         streams = List.unmodifiable(streams);
@@ -756,7 +764,7 @@ class CacheSnapshot implements Closeable {
     return "CacheSnapshot:{count:${lengths.length}, key:$key}";
   }
 
-  Future<String> getString(int index, {Encoding encoding:utf8}) {
+  Future<String> getString(int index, {Encoding encoding: utf8}) {
     Completer<String> completer = new Completer();
     StringBuffer stringBuffer = new StringBuffer();
     getStream(index).transform(encoding.decoder).listen((String content) {
@@ -764,7 +772,7 @@ class CacheSnapshot implements Closeable {
     }, onDone: () {
       close();
       completer.complete(stringBuffer.toString());
-    }, onError: (e){
+    }, onError: (e) {
       close();
       completer.completeError(e);
     }, cancelOnError: true);

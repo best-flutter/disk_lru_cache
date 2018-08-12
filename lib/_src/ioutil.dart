@@ -49,25 +49,24 @@ class EmptyIOSink implements IOSink {
   void writeln([Object obj = ""]) {}
 }
 
-
-
 typedef void IOSinkOnError(e);
 
 class IOSinkProxy implements IOSink {
   final IOSink sink;
   final IOSinkOnError onError;
 
-  IOSinkProxy(this.sink,{this.onError})
-      : assert(onError!=null), encoding = sink.encoding;
+  IOSinkProxy(this.sink, {this.onError})
+      : assert(onError != null),
+        encoding = sink.encoding;
 
   @override
   Encoding encoding;
 
   @override
   void add(List<int> data) {
-    try{
+    try {
       sink.add(data);
-    }catch(e){
+    } catch (e) {
       this.onError(e);
     }
   }
@@ -97,12 +96,11 @@ class IOSinkProxy implements IOSink {
 
   @override
   void write(Object obj) {
-    try{
+    try {
       sink.write(obj);
-    }catch(e){
+    } catch (e) {
       this.onError(e);
     }
-
   }
 
   @override
