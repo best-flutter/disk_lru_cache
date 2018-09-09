@@ -150,7 +150,7 @@ Future testCache() async {
 
   await cache.close();
 
-  print("Cache size : ${cache.size/1024/1024} m ");
+  print("Cache size : ${cache.size / 1024 / 1024} m ");
 
   assert(cache.size < maxSize);
 }

@@ -723,7 +723,6 @@ class CacheEntry {
   }
 }
 
-
 ///
 class CacheSnapshot implements Closeable {
   final List<CloseableStream<List<int>>> streams;
@@ -745,7 +744,7 @@ class CacheSnapshot implements Closeable {
   }
 
   Future<String> getString(int index, {Encoding encoding: utf8}) {
-    return IoUtil.stream2String(getStream(index),encoding);
+    return IoUtil.stream2String(getStream(index), encoding);
   }
 
   Stream<List<int>> getStream(int index) {

@@ -2,16 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="70febbb3-bf32-4a09-8b60-9f429c0ed624" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" afterPath="$PROJECT_DIR$/example/pubspec.lock" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" afterPath="$PROJECT_DIR$/example/pubspec.yaml" />
+      <change beforePath="$PROJECT_DIR$/example/lib/test_disk_cache.dart" afterPath="$PROJECT_DIR$/example/lib/test_disk_cache.dart" />
       <change beforePath="$PROJECT_DIR$/lib/_src/disk_lru_cache.dart" afterPath="$PROJECT_DIR$/lib/_src/disk_lru_cache.dart" />
       <change beforePath="$PROJECT_DIR$/lib/_src/ioutil.dart" afterPath="$PROJECT_DIR$/lib/_src/ioutil.dart" />
-      <change beforePath="$PROJECT_DIR$/lib/_src/lru_map.dart" afterPath="$PROJECT_DIR$/lib/_src/lru_map.dart" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" afterPath="$PROJECT_DIR$/pubspec.lock" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" afterPath="$PROJECT_DIR$/pubspec.yaml" />
+      <change beforePath="$PROJECT_DIR$/test/disk_lru_cache_test.dart" afterPath="$PROJECT_DIR$/test/disk_lru_cache_test.dart" />
     </list>
     <ignored path="$PROJECT_DIR$/.dart_tool/" />
     <ignored path="$PROJECT_DIR$/.idea/" />
@@ -42,7 +36,7 @@
         <entry file="file://$PROJECT_DIR$/lib/disk_lru_cache.dart">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="45">
-              <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+              <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -62,7 +56,7 @@
         <entry file="file://$PROJECT_DIR$/test/lru_map_test.dart">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="345">
-              <caret line="35" column="34" lean-forward="true" selection-start-line="29" selection-start-column="5" selection-end-line="35" selection-end-column="34" />
+              <caret line="35" column="34" lean-forward="false" selection-start-line="29" selection-start-column="5" selection-end-line="35" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -82,8 +76,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="95">
-                <caret line="32" column="0" lean-forward="true" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <first_editor relative-caret-position="275">
+                <caret line="104" column="58" lean-forward="true" selection-start-line="104" selection-start-column="58" selection-end-line="104" selection-end-column="58" />
                 <folding />
               </first_editor>
               <second_editor />
@@ -782,7 +776,7 @@
     <entry file="file://$PROJECT_DIR$/lib/disk_lru_cache.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
-          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -816,7 +810,7 @@
     <entry file="file://$PROJECT_DIR$/test/lru_map_test.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
-          <caret line="35" column="34" lean-forward="true" selection-start-line="29" selection-start-column="5" selection-end-line="35" selection-end-column="34" />
+          <caret line="35" column="34" lean-forward="false" selection-start-line="29" selection-start-column="5" selection-end-line="35" selection-end-column="34" />
           <folding />
         </state>
       </provider>
@@ -824,8 +818,8 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="95">
-            <caret line="32" column="0" lean-forward="true" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <first_editor relative-caret-position="275">
+            <caret line="104" column="58" lean-forward="true" selection-start-line="104" selection-start-column="58" selection-end-line="104" selection-end-column="58" />
             <folding />
           </first_editor>
           <second_editor />

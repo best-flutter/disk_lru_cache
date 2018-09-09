@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'dart:io';
 
-
 ///
 /// When a Stream is receiving events, this class also receiving the same events.
 ///
@@ -16,11 +15,11 @@ class CloseableStream<T> extends Stream<T> implements Closeable {
   final Function onError;
 
   CloseableStream(
-      this._stream, {
-        this.onData,
-        this.onDone,
-        this.onError,
-      });
+    this._stream, {
+    this.onData,
+    this.onDone,
+    this.onError,
+  });
 
   @override
   StreamSubscription<T> listen(void Function(T event) onData,
@@ -75,9 +74,9 @@ class CloseableStream<T> extends Stream<T> implements Closeable {
   }
 }
 
-class IoUtil{
-
-  static Future<String> stream2String(CloseableStream<List<int>> stream,Encoding encoding){
+class IoUtil {
+  static Future<String> stream2String(
+      CloseableStream<List<int>> stream, Encoding encoding) {
     Completer<String> completer = new Completer();
     StringBuffer stringBuffer = new StringBuffer();
     stream.transform(encoding.decoder).listen((String content) {

@@ -166,7 +166,7 @@ void main() {
     expect(cache.size < maxSize, true);
 
     await cache.close();
-    print("Cache size : ${cache.size/1024/1024} m ");
+    print("Cache size : ${cache.size / 1024 / 1024} m ");
   }
 
   Future testRemoveAll() async {
@@ -256,12 +256,11 @@ void main() {
       values = values.where((CacheEntry entry) {
         return entry.key == "readkey";
       });
-      try{
+      try {
         await values.toList()[0].cleanFiles[0].delete();
-      }catch(e){
+      } catch (e) {
         print(e);
       }
-
 
       expect(await cache.get("readkey"), null);
     }
@@ -285,7 +284,5 @@ void main() {
     await sink.flush();
     await sink.close();
     await editor.commit();
-
-
   });
 }
