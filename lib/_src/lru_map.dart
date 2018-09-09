@@ -264,10 +264,8 @@ class LruMap<K, V> implements Map<K, V> {
     });
   }
 
-  @deprecated
-  @override
   Map<RK, RV> retype<RK, RV>() {
-    return _inner.retype<RK, RV>();
+    throw new Exception("Not implement");
   }
 
   @override
@@ -277,7 +275,7 @@ class LruMap<K, V> implements Map<K, V> {
 
   @override
   Map<K2, V2> map<K2, V2>(MapEntry<K2, V2> Function(K key, V value) f) {
-    throw new Exception("No implement");
+    throw new Exception("Not implement");
   }
 }
 

@@ -723,76 +723,6 @@ class CacheEntry {
   }
 }
 
-///
-/// When a Stream is receiving events, this class also receiving the same events.
-///
-class CloseableStream<T> extends Stream<T> implements Closeable {
-  StreamSubscription<T> _streamSubscription;
-
-  final Stream<T> _stream;
-  final void Function(T event) onData;
-  final void Function() onDone;
-  final Function onError;
-
-  CloseableStream(
-    this._stream, {
-    this.onData,
-    this.onDone,
-    this.onError,
-  });
-
-  @override
-  StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) {
-    assert(onData != null);
-    void Function(T event) _onData;
-    if (this.onData != null && onData != null) {
-      _onData = (T event) {
-        this.onData(event);
-        onData(event);
-      };
-    } else {
-      _onData = onData ?? this.onData;
-    }
-
-    Function _onError;
-    if (this.onError != null && onError != null) {
-      _onError = (e) {
-        this.onError(e);
-        onError(e);
-      };
-    } else {
-      _onError = onError ?? this.onError;
-    }
-
-    void Function() _onDone;
-    if (this.onDone != null && onDone != null) {
-      _onDone = () {
-        this.onDone();
-        onDone();
-      };
-    } else {
-      _onDone = onDone ?? this.onDone;
-    }
-
-    try {
-      _streamSubscription = _stream.listen(_onData,
-          onError: _onError, onDone: _onDone, cancelOnError: cancelOnError);
-      return _streamSubscription;
-    } catch (e) {
-      _onError(e);
-      rethrow;
-    }
-  }
-
-  @override
-  Future close() {
-    if (_streamSubscription == null) {
-      return new Future.value();
-    }
-    return _streamSubscription.cancel();
-  }
-}
 
 ///
 class CacheSnapshot implements Closeable {
@@ -815,19 +745,7 @@ class CacheSnapshot implements Closeable {
   }
 
   Future<String> getString(int index, {Encoding encoding: utf8}) {
-    Completer<String> completer = new Completer();
-    StringBuffer stringBuffer = new StringBuffer();
-    getStream(index).transform(encoding.decoder).listen((String content) {
-      stringBuffer.write(content);
-    }, onDone: () {
-      close();
-      completer.complete(stringBuffer.toString());
-    }, onError: (e) {
-      close();
-      completer.completeError(e);
-    }, cancelOnError: true);
-
-    return completer.future;
+    return IoUtil.stream2String(getStream(index),encoding);
   }
 
   Stream<List<int>> getStream(int index) {

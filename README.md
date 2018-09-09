@@ -1,12 +1,12 @@
 
 <p align="center">
-    <a href="https://travis-ci.org/jzoom/disk_lru_cache">
-        <img src="https://travis-ci.org/jzoom/disk_lru_cache.svg?branch=master" alt="Build Status" />
+    <a href="https://travis-ci.org/best-flutter/disk_lru_cache">
+        <img src="https://travis-ci.org/best-flutter/disk_lru_cache.svg?branch=master" alt="Build Status" />
     </a>
-    <a href="https://coveralls.io/github/jzoom/disk_lru_cache?branch=master">
-        <img src="https://coveralls.io/repos/github/jzoom/disk_lru_cache/badge.svg?branch=master" alt="Coverage Status" />
+    <a href="https://coveralls.io/github/best-flutter/disk_lru_cache?branch=master">
+        <img src="https://coveralls.io/repos/github/best-flutter/disk_lru_cache/badge.svg?branch=master" alt="Coverage Status" />
     </a>
-    <a href="https://github.com/jzoom/disk_lru_cache/pulls">
+    <a href="https://github.com/best-flutter/disk_lru_cache/pulls">
         <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome" />
     </a>
     <a href="https://pub.dartlang.org/packages/disk_lru_cache">
@@ -23,6 +23,36 @@ A cache that uses a bounded amount of space on a filesystem.
 Each cache entry has a string key and a fixed number of files, witch is accessible as stream.
 
 # Use cases
+
+
+## Working with memery
+
+We provided a `LruMap` ,in order to support LRU order in memory, witch is a subclass of Map.So ,wo can use the `LruMap` just like Map
+
+
+
+```
+final LruMap<String, int> map = new LruMap();
+
+expect(map.values.toList().length, 0);
+
+map['a'] = 1;
+map['b'] = 2;
+map['c'] = 3;
+
+/// use the key 'a'
+var f = map['a'];
+
+/// We use the key 'a', so at this moment it is the last element.
+alues = map.values;
+expect(values.toList()[0], 2);
+expect(values.toList()[1], 3);
+expect(values.toList()[2], 1);
+
+```
+
+
+## Working with file system
 
 The basic usage is like this:
 

@@ -1,0 +1,105 @@
+Flutter crash report; please file at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter --no-color packages get
+
+## exception
+
+YamlException: Error on line 14, column 1: Could not find expected ':' for simple key.
+s
+^
+
+```
+#0      Scanner._removeSimpleKey (package:yaml/src/scanner.dart:526:7)
+#1      Scanner._fetchStreamEnd (package:yaml/src/scanner.dart:598:5)
+#2      Scanner._fetchNextToken (package:yaml/src/scanner.dart:356:7)
+#3      Scanner._fetchMoreTokens (package:yaml/src/scanner.dart:339:7)
+#4      Scanner.peek (package:yaml/src/scanner.dart:317:27)
+#5      Parser._parseBlockMappingKey (package:yaml/src/parser.dart:418:26)
+#6      Parser._stateMachine (package:yaml/src/parser.dart:86:16)
+#7      Parser.parse (package:yaml/src/parser.dart:47:19)
+#8      Loader._loadMapping (package:yaml/src/loader.dart:171:23)
+#9      Loader._loadNode (package:yaml/src/loader.dart:86:16)
+#10     Loader._loadDocument (package:yaml/src/loader.dart:62:20)
+#11     Loader.load (package:yaml/src/loader.dart:54:20)
+#12     loadYamlDocument (package:yaml/yaml.dart:51:25)
+#13     loadYamlNode (package:yaml/yaml.dart:42:5)
+#14     loadYaml (package:yaml/yaml.dart:34:5)
+#15     FlutterManifest.createFromString (package:flutter_tools/src/flutter_manifest.dart:42:28)
+<asynchronous suspension>
+#16     FlutterManifest.createFromPath (package:flutter_tools/src/flutter_manifest.dart:36:12)
+<asynchronous suspension>
+#17     FlutterProject._readManifest (package:flutter_tools/src/project.dart:120:60)
+<asynchronous suspension>
+#18     FlutterProject.fromDirectory (package:flutter_tools/src/project.dart:41:44)
+<asynchronous suspension>
+#19     FlutterProject.fromPath (package:flutter_tools/src/project.dart:56:58)
+#20     PackagesGetCommand.runCommand (package:flutter_tools/src/commands/packages.dart:83:61)
+<asynchronous suspension>
+#21     FlutterCommand.verifyThenRunCommand (package:flutter_tools/src/runner/flutter_command.dart:348:18)
+#22     _asyncThenWrapperHelper.<anonymous closure> (dart:async/runtime/libasync_patch.dart:77:64)
+#23     _rootRunUnary (dart:async/zone.dart:1132:38)
+#24     _CustomZone.runUnary (dart:async/zone.dart:1029:19)
+#25     _FutureListener.handleValue (dart:async/future_impl.dart:129:18)
+#26     Future._propagateToListeners.handleValueCallback (dart:async/future_impl.dart:642:45)
+#27     Future._propagateToListeners (dart:async/future_impl.dart:671:32)
+#28     Future._complete (dart:async/future_impl.dart:476:7)
+#29     _SyncCompleter.complete (dart:async/future_impl.dart:51:12)
+#30     _AsyncAwaitCompleter.complete.<anonymous closure> (dart:async/runtime/libasync_patch.dart:33:20)
+#31     _rootRun (dart:async/zone.dart:1124:13)
+#32     _CustomZone.run (dart:async/zone.dart:1021:19)
+#33     _CustomZone.bindCallback.<anonymous closure> (dart:async/zone.dart:947:23)
+#34     _microtaskLoop (dart:async/schedule_microtask.dart:41:21)
+#35     _startMicrotaskLoop (dart:async/schedule_microtask.dart:50:5)
+#36     _runPendingImmediateCallback (dart:isolate/runtime/libisolate_patch.dart:114:13)
+#37     _RawReceivePortImpl._handleMessage (dart:isolate/runtime/libisolate_patch.dart:170:5)
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel beta, v0.6.0, on Mac OS X 10.13.3 17D47, locale zh-Hans-CN)
+    • Flutter version 0.6.0 at /Users/jzoom/working/flutter
+    • Framework revision 9299c02cf7 (4 weeks ago), 2018-08-16 00:35:12 +0200
+    • Engine revision e3687f70c7
+    • Dart version 2.1.0-dev.0.0.flutter-be6309690f
+
+[✓] Android toolchain - develop for Android devices (Android SDK 27.0.3)
+    • Android SDK at /Users/jzoom/Library/Android/sdk
+    • Android NDK at /Users/jzoom/Library/Android/sdk/ndk-bundle
+    • Platform android-27, build-tools 27.0.3
+    • ANDROID_HOME = /Users/jzoom/Library/Android/sdk
+    • Java binary at: /Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin/java
+    • Java version OpenJDK Runtime Environment (build 1.8.0_152-release-1024-b01)
+    • All Android licenses accepted.
+
+[✓] iOS toolchain - develop for iOS devices (Xcode 9.4.1)
+    • Xcode at /Applications/Xcode.app/Contents/Developer
+    • Xcode 9.4.1, Build version 9F2000
+    • ios-deploy 1.9.2
+    • CocoaPods version 1.5.2
+
+[✓] Android Studio (version 3.1)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    • Flutter plugin version 27.1.1
+    • Dart plugin version 173.4700
+    • Java version OpenJDK Runtime Environment (build 1.8.0_152-release-1024-b01)
+
+[!] IntelliJ IDEA Community Edition (version 2018.1.5)
+    • IntelliJ at /Applications/IntelliJ IDEA CE.app
+    ✗ Flutter plugin not installed; this adds Flutter specific functionality.
+    ✗ Dart plugin not installed; this adds Dart specific functionality.
+    • For information about installing plugins, see
+      https://flutter.io/intellij-setup/#installing-the-plugins
+
+[✓] VS Code (version 1.26.1)
+    • VS Code at /Applications/Visual Studio Code.app/Contents
+    • Flutter extension version 2.18.0
+
+[✓] Connected devices (2 available)
+    • Android SDK built for x86 • emulator-5554                        • android-x86 • Android 8.1.0 (API 27) (emulator)
+    • iPhone 6s                 • A797D8CC-2D5D-401B-9634-6D56B30FC76E • ios         • iOS 11.4 (simulator)
+
+! Doctor found issues in 1 category.
+```
