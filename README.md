@@ -110,5 +110,24 @@ With bytes
 ```
 
 
+## Manage the cache
+
+
+### Get the bytes of the cache in file system
+
+```
+DiskLruCache cache = ...;
+print(cache.size)
+```
+
+### Clean the cache
+
+```
+DiskLruCache cache = ...;
+cache.clean();
+
+```
+
+
 
 

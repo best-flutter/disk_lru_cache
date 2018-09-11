@@ -60,6 +60,8 @@ class DiskLruCache implements Closeable {
   /// Cache size in bytes
   int _size = 0;
 
+
+  /// Total size in bytes in file system.
   int get size => _size;
 
   bool _mostRecentTrimFailed = false;
