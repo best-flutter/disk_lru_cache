@@ -10,8 +10,6 @@ import 'package:disk_lru_cache/_src/lru_map.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart' as http;
-
 ///
 const _ = null;
 
@@ -737,7 +735,17 @@ class CacheSnapshot implements Closeable {
         streams = List.unmodifiable(streams);
 
   Future<Uint8List> getBytes(int index) async {
-    return new http.ByteStream(getStream(index)).toBytes();
+    final completer = Completer<Uint8List>();
+    final sink = ByteConversionSink.withCallback(
+      (bytes) => completer.complete(Uint8List.fromList(bytes)),
+    );
+    getStream(index).listen(
+      sink.add,
+      onError: completer.completeError,
+      onDone: sink.close,
+      cancelOnError: true,
+    );
+    return completer.future;
   }
 
   @override
