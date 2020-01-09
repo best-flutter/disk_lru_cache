@@ -1,6 +1,6 @@
 name: disk_lru_cache
 description: Disk lru cache for flutter.
-version: 0.0.1
+version: 0.0.2
 author: JZoom <jzoom8112@gmail.com>
 homepage: https://github.com/best-flutter/disk_lru_cache
 
@@ -14,9 +14,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  synchronized: ^2.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  http:
 
 flutter:

@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'dart:ui' as ui show instantiateImageCodec, Codec;
 
 import 'package:disk_lru_cache/_src/ioutil.dart';
-import 'package:disk_lru_cache/_src/lock.dart';
 import 'package:disk_lru_cache/_src/lru_map.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:synchronized/synchronized.dart';
 
 ///
 const _ = null;
@@ -58,6 +58,7 @@ class DiskLruCache implements Closeable {
   /// Cache size in bytes
   int _size = 0;
 
+  final Lock lock = new Lock(reentrant: true);
 
   /// Total size in bytes in file system.
   int get size => _size;
@@ -85,7 +86,7 @@ class DiskLruCache implements Closeable {
   /// Returns a snapshot of the entry named key, or null if it doesn't exist is not currently
   /// readable. If a value is returned, it is moved to the tail of the LRU queue.
   Future<CacheSnapshot> get(String key) {
-    return SynchronizedLock.synchronized<CacheSnapshot>(this, () async {
+    return lock.synchronized<CacheSnapshot>(() async {
       await _lazyInit();
       CacheEntry entry = _lruEntries[key];
       if (entry == null || !entry.ready) {
@@ -104,7 +105,7 @@ class DiskLruCache implements Closeable {
   }
 
   Future clean() {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       Iterable<CacheEntry> entries = await values;
       List<Future<bool>> list = [];
       for (CacheEntry entry in entries) {
@@ -116,7 +117,7 @@ class DiskLruCache implements Closeable {
 
   Future<CacheEditor> edit(String key,
       {int sequenceNumber: ANY_SEQUENCE_NUMBER}) {
-    return SynchronizedLock.synchronized<CacheEditor>(this, () async {
+    return lock.synchronized<CacheEditor>(() async {
       await _lazyInit();
 
       CacheEntry entry = _lruEntries[key];
@@ -201,7 +202,7 @@ class DiskLruCache implements Closeable {
   }
 
   Future _cleanUp() {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       try {
         print("Start cleanup");
         await _trimToSize();
@@ -216,7 +217,7 @@ class DiskLruCache implements Closeable {
   }
 
   Future _rebuildRecord() {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       print("Start to rebuild record");
       if (_recordWriter != null) {
         await _recordWriter.close();
@@ -272,7 +273,7 @@ class DiskLruCache implements Closeable {
 
   /// Read record file, rebuild it if broken.
   Future _lazyInit() {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       if (_initialized) {
         return _;
       }
@@ -315,7 +316,7 @@ class DiskLruCache implements Closeable {
 
   /// make copy of current values
   Future<Iterable<CacheEntry>> get values {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       await _lazyInit();
       return List<CacheEntry>.from(_lruEntries.values);
     });
@@ -407,7 +408,7 @@ class DiskLruCache implements Closeable {
   /// Close the cache, do some clean stuff, it is an error to use cache when cache is closed.
   @override
   Future close() {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       if (_closed) return _;
       try {
         if (_recordWriter != null) {
@@ -424,7 +425,7 @@ class DiskLruCache implements Closeable {
   }
 
   Future<bool> remove(String key) {
-    return SynchronizedLock.synchronized<bool>(this, () async {
+    return lock.synchronized<bool>(() async {
       await _lazyInit();
       CacheEntry entry = _lruEntries[key];
       if (entry == null) return false;
@@ -473,7 +474,7 @@ class DiskLruCache implements Closeable {
 
   /// clean the entry,remove from cache
   Future _rollback(CacheEditor editor) {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       CacheEntry entry = editor.entry;
       entry.currentEditor = null;
       await Future.wait(entry.dirtyFiles.map(_deleteSafe));
@@ -496,7 +497,7 @@ class DiskLruCache implements Closeable {
   }
 
   Future _commit(CacheEditor editor) {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       CacheEntry entry = editor.entry;
       if (entry.currentEditor != editor) {
         throw new Exception("Commit editor's entry did not match the editor");
@@ -554,11 +555,14 @@ class CacheEditor {
   final CacheEntry entry;
 
   final DiskLruCache cache;
+
   // If a cache is first created, it must has value for all of the files.
   final List<bool> hasValues;
 
   ///
   bool _done = false;
+
+  final Lock lock = new Lock();
 
   CacheEditor._({this.entry, this.cache})
       : assert(entry != null),
@@ -567,7 +571,7 @@ class CacheEditor {
           ..fillRange(0, cache._filesCount, false);
 
   Future detach() {
-    return SynchronizedLock.synchronized(this, () async {
+    return lock.synchronized(() async {
       if (entry.currentEditor == this) {
         for (int i = 0, c = cache._filesCount; i < c; i++) {
           await cache._deleteSafe(entry.dirtyFiles[i]);
@@ -583,7 +587,7 @@ class CacheEditor {
   }
 
   Future commit() async {
-    return SynchronizedLock.synchronized(cache, () async {
+    return cache.lock.synchronized(() async {
       if (_done) {
         return;
       }
@@ -610,7 +614,7 @@ class CacheEditor {
   }
 
   Future<IOSink> newSink(int index) {
-    return SynchronizedLock.synchronized<IOSink>(cache, () {
+    return cache.lock.synchronized<IOSink>(() {
       if (_done) {
         throw new Exception("The editor is finish done it's job");
       }
@@ -728,6 +732,7 @@ class CacheSnapshot implements Closeable {
   final List<CloseableStream<List<int>>> streams;
   final List<int> lengths;
   final String key;
+
   CacheSnapshot(
       {this.key, List<CloseableStream<List<int>>> streams, this.lengths})
       : assert(

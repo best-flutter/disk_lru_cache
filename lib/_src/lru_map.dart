@@ -179,6 +179,7 @@ class LruMap<K, V> implements Map<K, V> {
 
   @override
   bool get isNotEmpty => _inner.isNotEmpty;
+
   @override
   void forEach(void Function(K key, V value) f) {
     for (_Entry<K, V> e = head; e != null; e = e.after) {

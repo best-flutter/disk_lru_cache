@@ -8,6 +8,7 @@ dependencies:
   disk_lru_cache:
     path: ../
 
+  http:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:

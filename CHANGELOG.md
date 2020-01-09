@@ -1,3 +1,8 @@
+# [0.0.2]
+
+* Use synchronized library.
+
+
 ## [0.0.1] - Basic usage.
 
 * LRU Map

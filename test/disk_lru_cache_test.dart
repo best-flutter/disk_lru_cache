@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:disk_lru_cache/_src/disk_lru_cache.dart';
 import 'package:http/http.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'dart:math' as Math;
 import 'package:disk_lru_cache/disk_lru_cache.dart';
 
@@ -153,7 +153,6 @@ void main() {
       await test();
     }
 
-    int size = cache.size;
 
     Iterable<CacheEntry> entries = await cache.values;
     int calcSize = 0;
@@ -217,7 +216,6 @@ void main() {
     if (editor != null) {
       IOSink sink = await editor.newSink(0);
 
-      CacheSnapshot snapshot;
 
       sink.write('your value');
       await sink.flush();

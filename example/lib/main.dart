@@ -1,10 +1,5 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 
-import 'package:disk_lru_cache/disk_lru_cache.dart';
 import 'test_disk_cache.dart';
 
 void main() async {

@@ -22,10 +22,10 @@ Disk lru cache for flutter. [wiki](https://en.wikipedia.org/wiki/Cache_replaceme
 A cache that uses a bounded amount of space on a filesystem. 
 Each cache entry has a string key and a fixed number of files, witch is accessible as stream.
 
-# Use cases
+## Use cases
 
 
-## Working with memery
+#### Working with memery
 
 We provided a `LruMap` ,in order to support LRU order in memory, witch is a subclass of Map.So ,wo can use the `LruMap` just like Map
 
@@ -52,7 +52,7 @@ expect(values.toList()[2], 1);
 ```
 
 
-## Working with file system
+#### Working with file system
 
 The basic usage is like this:
 
@@ -113,14 +113,14 @@ With bytes
 ## Manage the cache
 
 
-### Get the bytes of the cache in file system
+#### Get the bytes of the cache in file system
 
 ```
 DiskLruCache cache = ...;
 print(cache.size)
 ```
 
-### Clean the cache
+#### Clean the cache
 
 ```
 DiskLruCache cache = ...;

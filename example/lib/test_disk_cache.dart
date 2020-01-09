@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as Math;
 import 'dart:typed_data';
 
 import 'package:disk_lru_cache/_src/disk_lru_cache.dart';
-import 'package:http/http.dart';
-import 'package:test/test.dart';
-import 'dart:math' as Math;
 import 'package:disk_lru_cache/disk_lru_cache.dart';
+import 'package:http/http.dart';
 
 Future testCache() async {
   int maxSize =
@@ -22,9 +21,6 @@ Future testCache() async {
   editor = await cache.edit('errorkey');
   if (editor != null) {
     IOSink sink = await editor.newSink(0);
-
-    CacheSnapshot snapshot;
-
     sink.write('your value');
     await sink.flush();
 
@@ -144,7 +140,7 @@ Future testCache() async {
   for (CacheEntry entry in entries) {
     list.add(cache.remove(entry.key));
   }
-  List<bool> results = await Future.wait(list);
+  await Future.wait(list);
 
   assert(cache.size == 0);
 
